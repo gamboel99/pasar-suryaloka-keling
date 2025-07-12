@@ -1,82 +1,85 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Pasar Suryaloka Keling</title>
   <style>
     body {
-      margin: 0;
-      font-family: sans-serif;
+      font-family: 'Segoe UI', sans-serif;
       background-color: #f1fff1;
-      color: #333;
+      margin: 0;
+      padding: 0;
     }
 
     header {
-      background-color: #00a651;
+      background-color: #2e7d32;
+      color: white;
       padding: 20px;
       text-align: center;
-      color: white;
     }
 
     nav {
+      background-color: #43a047;
       display: flex;
       justify-content: center;
-      background-color: #007e33;
+      gap: 20px;
+      padding: 10px 0;
     }
 
     nav a {
       color: white;
-      padding: 14px 20px;
       text-decoration: none;
-      display: inline-block;
+      font-weight: bold;
     }
 
     nav a:hover {
-      background-color: #00c853;
+      text-decoration: underline;
     }
 
-    main {
+    .container {
       padding: 20px;
-      max-width: 800px;
+      max-width: 900px;
       margin: auto;
     }
 
-    h1, h2, h3 {
-      color: #007e33;
+    h2 {
+      color: #2e7d32;
+      text-align: center;
     }
 
     ul {
-      list-style: none;
-      padding-left: 0;
+      list-style-type: none;
+      padding: 0;
     }
 
     ul li {
-      padding: 6px 0;
-      font-size: 16px;
+      background: white;
+      padding: 10px;
+      margin: 8px 0;
+      border-radius: 8px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    }
+
+    #kontak {
+      background: #e8f5e9;
+      padding: 20px;
+      margin-top: 40px;
+      border-top: 2px solid #66bb6a;
     }
 
     footer {
-      background-color: #007e33;
+      background-color: #2e7d32;
       color: white;
       text-align: center;
-      padding: 10px;
-      margin-top: 40px;
+      padding: 15px;
+      margin-top: 30px;
     }
 
-    .btn-wa {
-      display: inline-block;
-      padding: 10px 20px;
-      background-color: #25d366;
-      color: white;
-      border-radius: 5px;
-      text-decoration: none;
-      font-weight: bold;
-      margin-top: 10px;
-    }
-
-    .btn-wa:hover {
-      background-color: #1ebc59;
+    @media (max-width: 600px) {
+      nav {
+        flex-direction: column;
+      }
     }
   </style>
 </head>
@@ -94,31 +97,32 @@
     <a href="#kontak">Kontak</a>
   </nav>
 
-  <main>
-    <section>
-      <h2>Selamat Datang di Pasar Suryaloka Keling</h2>
-      <p>Marketplace digital resmi milik Desa Keling, Kec. Kepung, Kab. Kediri. 
-        Dapatkan berbagai produk unggulan lokal seperti sayur segar, kerajinan UMKM, sembako murah, hingga layanan jasa masyarakat desa.</p>
-      <p><strong>Buka setiap hari pukul 07.00 – 17.00 WIB</strong></p>
-    </section>
+  <div class="container">
+    <h2>Selamat Datang di Pasar Suryaloka Keling</h2>
+    <p>
+      Marketplace digital resmi milik Desa Keling, Kec. Kepung, Kab. Kediri.
+      Dapatkan berbagai produk unggulan lokal seperti sayur segar, kerajinan UMKM, sembako murah, hingga layanan jasa masyarakat desa.
+    </p>
+    <p><strong>Buka setiap hari:</strong> 07.00 – 17.00 WIB</p>
 
-    <section>
-      <h3>Produk Unggulan</h3>
-      <ul>
-        <li>🥬 Sayur Mayur Segar</li>
-        <li>🍚 Beras & Sembako</li>
-        <li>🧵 Kerajinan Tangan Lokal</li>
-        <li>🍯 Produk UMKM</li>
-        <li>🧼 Sabun, Herbal, dan Jamu</li>
-      </ul>
-    </section>
+    <h3>Produk Unggulan</h3>
+    <ul>
+      <li>🥬 Sayur Mayur Segar</li>
+      <li>🍚 Beras & Sembako</li>
+      <li>🧵 Kerajinan Tangan Lokal</li>
+      <li>🍯 Produk UMKM</li>
+      <li>🧼 Sabun, Herbal, dan Jamu</li>
+    </ul>
 
     <section id="kontak">
-      <h3>Ingin Jadi Penjual atau Butuh Bantuan?</h3>
-      <p>Hubungi Admin melalui WhatsApp:</p>
-      <a class="btn-wa" href="https://wa.me/6282228278397" target="_blank">Chat Admin di WhatsApp</a>
+      <h3>Kontak Kami</h3>
+      <p>📞 <strong>Admin WA:</strong> <a href="https://wa.me/6282228278397" target="_blank">0822-2827-8397</a></p>
+      <p>📧 <strong>Email:</strong> <a href="mailto:mitrautamaconsultindo@gmail.com">mitrautamaconsultindo@gmail.com</a></p>
+      <p>📍 <strong>Alamat Gerai:</strong><br>
+        Jl. Raya Keling, Bukaan, Keling, Kec. Kepung,<br>
+        Kabupaten Kediri, Jawa Timur 64293</p>
     </section>
-  </main>
+  </div>
 
   <footer>
     &copy; 2025 Pasar Suryaloka Keling – Developed by CV Mitra Utama Consultindo
