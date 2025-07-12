@@ -9,72 +9,83 @@
     input, textarea { width: 100%; margin-bottom: 10px; padding: 8px; }
     button { padding: 10px 20px; background: #00c853; color: white; border: none; cursor: pointer; }
     #status { margin-top: 10px; text-align: center; font-weight: bold; }
+    .back-btn { text-align: center; margin-top: 20px; }
+    .back-btn a { background: #00c853; color: white; padding: 10px 20px; text-decoration: none; border-radius: 6px; }
   </style>
-  <script type="module">
-    import { createClient } from "https://esm.sh/@supabase/supabase-js";
-
-    const supabaseUrl = 'https://fyiedhszxdkhuqopxoaw.supabase.co';
-    const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ5aWVkaHN6eGRraHVxb3B4b2F3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTIyODQ3MTksImV4cCI6MjA2Nzg2MDcxOX0.87Ri-pQtNDVk5t9e7POlayVOAdgGnlKgq9Z9VbcaLW0';
-    const supabase = createClient(supabaseUrl, supabaseKey);
-
-    document.addEventListener("DOMContentLoaded", () => {
-      const form = document.getElementById("produkForm");
-      const status = document.getElementById("status");
-
-      form.addEventListener("submit", async (e) => {
-        e.preventDefault();
-        status.innerText = "⏳ Mengirim...";
-
-        const nama = document.getElementById("nama").value;
-        const harga = parseInt(document.getElementById("harga").value);
-        const deskripsi = document.getElementById("deskripsi").value;
-        const kontak = document.getElementById("kontak").value;
-        const file = document.getElementById("gambar").files[0];
-
-        // Upload gambar ke bucket
-        const fileName = `${Date.now()}-${file.name}`;
-        const { data: uploadData, error: uploadError } = await supabase.storage
-          .from('produk-images')
-          .upload(fileName, file);
-
-        if (uploadError) {
-          status.innerText = "❌ Gagal upload gambar: " + uploadError.message;
-          return;
-        }
-
-        // Ambil public URL gambar
-        const { data: publicUrlData } = supabase
-          .storage
-          .from('produk-images')
-          .getPublicUrl(fileName);
-
-        const gambar_url = publicUrlData.publicUrl;
-
-        // Insert data ke tabel Produk
-        const { error } = await supabase
-          .from('Produk')
-          .insert([{ nama_produk: nama, harga, deskripsi, kontak, gambar_url }]);
-
-        if (error) {
-          status.innerText = "❌ Gagal menyimpan data: " + error.message;
-        } else {
-          status.innerText = "✅ Produk berhasil dikirim!";
-          form.reset();
-        }
-      });
-    });
-  </script>
+  <script src="https://unpkg.com/@supabase/supabase-js"></script>
 </head>
 <body>
-  <h2>Form Jual Produk</h2>
-  <form id="produkForm">
-    <input type="text" id="nama" placeholder="Nama Produk" required />
-    <input type="number" id="harga" placeholder="Harga (Rp)" required />
-    <textarea id="deskripsi" placeholder="Deskripsi Produk"></textarea>
-    <input type="text" id="kontak" placeholder="Nomor HP/WA" required />
-    <input type="file" id="gambar" accept="image/*" required />
-    <button type="submit">Kirim Produk</button>
-    <p id="status"></p>
-  </form>
+
+<h2>Form Jual Produk</h2>
+
+<form id="produkForm">
+  <input type="text" id="nama" placeholder="Nama Produk" required />
+  <input type="number" id="harga" placeholder="Harga (Rp)" required />
+  <textarea id="deskripsi" placeholder="Deskripsi Produk"></textarea>
+  <input type="text" id="kontak" placeholder="Nomor HP/WA" required />
+  <input type="file" id="gambar" accept="image/*" required />
+  <button type="submit">Kirim Produk</button>
+  <p id="status"></p>
+</form>
+
+<div class="back-btn">
+  <a href="index.html">⬅️ Kembali ke Beranda</a>
+</div>
+
+<script>
+  const supabase = supabase.createClient(
+    'https://fyiedhszxdkhuqopxoaw.supabase.co',
+    'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ5aWVkaHN6eGRraHVxb3B4b2F3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTIyODQ3MTksImV4cCI6MjA2Nzg2MDcxOX0.87Ri-pQtNDVk5t9e7POlayVOAdgGnlKgq9Z9VbcaLW0'
+  );
+
+  const form = document.getElementById("produkForm");
+  const status = document.getElementById("status");
+
+  form.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    status.innerText = "⏳ Mengirim...";
+
+    const nama = document.getElementById("nama").value;
+    const harga = parseInt(document.getElementById("harga").value);
+    const deskripsi = document.getElementById("deskripsi").value;
+    const kontak = document.getElementById("kontak").value;
+    const file = document.getElementById("gambar").files[0];
+
+    const fileName = `${Date.now()}-${file.name}`;
+    const { data: imgData, error: imgErr } = await supabase.storage
+      .from('produk-images')
+      .upload(fileName, file);
+
+    if (imgErr) {
+      status.innerText = "❌ Gagal upload gambar: " + imgErr.message;
+      return;
+    }
+
+    const { data: publicUrlData } = supabase.storage
+      .from('produk-images')
+      .getPublicUrl(fileName);
+
+    const gambar_url = publicUrlData.publicUrl;
+
+    const { error } = await supabase
+      .from('Produk')
+      .insert([{ 
+        nama_produk: nama, 
+        harga, 
+        deskripsi, 
+        kontak, 
+        gambar_url, 
+        aktif: true 
+      }]);
+
+    if (error) {
+      status.innerText = "❌ Gagal menyimpan: " + error.message;
+    } else {
+      status.innerText = "✅ Produk berhasil dikirim!";
+      form.reset();
+    }
+  });
+</script>
+
 </body>
 </html>
