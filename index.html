@@ -4,27 +4,40 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Pasar Suryaloka Keling</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
   <style>
+    * {
+      box-sizing: border-box;
+    }
+
     body {
-      font-family: 'Segoe UI', sans-serif;
-      background-color: #f1fff1;
+      font-family: 'Poppins', sans-serif;
       margin: 0;
-      padding: 0;
+      background-color: #f3fdf3;
     }
 
     header {
-      background-color: #2e7d32;
+      background: linear-gradient(to right, #2e7d32, #66bb6a);
+      padding: 40px 20px;
       color: white;
-      padding: 20px;
       text-align: center;
     }
 
+    header h1 {
+      margin: 0;
+      font-size: 32px;
+    }
+
+    header p {
+      margin: 5px 0 20px;
+    }
+
     nav {
-      background-color: #43a047;
+      background: #388e3c;
       display: flex;
       justify-content: center;
       gap: 20px;
-      padding: 10px 0;
+      padding: 12px;
     }
 
     nav a {
@@ -37,42 +50,65 @@
       text-decoration: underline;
     }
 
-    .container {
-      padding: 20px;
-      max-width: 900px;
-      margin: auto;
-    }
-
-    h2 {
-      color: #2e7d32;
+    .hero {
       text-align: center;
+      padding: 40px 20px;
     }
 
-    ul {
-      list-style-type: none;
+    .hero h2 {
+      color: #2e7d32;
+      font-size: 26px;
+    }
+
+    .hero p {
+      max-width: 600px;
+      margin: 10px auto 30px;
+    }
+
+    .btn {
+      background-color: #43a047;
+      color: white;
+      padding: 12px 20px;
+      text-decoration: none;
+      border-radius: 8px;
+      margin: 0 10px;
+      display: inline-block;
+    }
+
+    .btn:hover {
+      background-color: #2e7d32;
+    }
+
+    .produk {
+      background-color: #e8f5e9;
+      padding: 30px 20px;
+    }
+
+    .produk h3 {
+      text-align: center;
+      color: #2e7d32;
+    }
+
+    .produk ul {
+      max-width: 700px;
+      margin: auto;
+      list-style: none;
       padding: 0;
     }
 
-    ul li {
+    .produk li {
       background: white;
       padding: 10px;
-      margin: 8px 0;
-      border-radius: 8px;
-      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-    }
-
-    #kontak {
-      background: #e8f5e9;
-      padding: 20px;
-      margin-top: 40px;
-      border-top: 2px solid #66bb6a;
+      margin: 10px 0;
+      border-left: 5px solid #66bb6a;
+      border-radius: 6px;
     }
 
     footer {
       background-color: #2e7d32;
       color: white;
       text-align: center;
-      padding: 15px;
+      padding: 20px;
       margin-top: 30px;
     }
 
@@ -85,48 +121,39 @@
 </head>
 <body>
 
-  <header>
-    <h1>Pasar Suryaloka Keling</h1>
-    <p>Marketplace Digital Resmi Desa Keling, Kec. Kepung, Kab. Kediri</p>
-  </header>
+<header>
+  <h1>Pasar Suryaloka Keling</h1>
+  <p>Marketplace Digital Resmi Desa Keling, Kec. Kepung, Kab. Kediri</p>
+</header>
 
-  <nav>
-    <a href="index.html">Beranda</a>
-    <a href="produk.html">Produk</a>
-    <a href="jual.html">Jual</a>
-    <a href="#kontak">Kontak</a>
-  </nav>
+<nav>
+  <a href="index.html">Beranda</a>
+  <a href="produk.html">Produk</a>
+  <a href="jual.html">Jual</a>
+  <a href="kontak.html">Kontak</a>
+</nav>
 
-  <div class="container">
-    <h2>Selamat Datang di Pasar Suryaloka Keling</h2>
-    <p>
-      Marketplace digital resmi milik Desa Keling, Kec. Kepung, Kab. Kediri.
-      Dapatkan berbagai produk unggulan lokal seperti sayur segar, kerajinan UMKM, sembako murah, hingga layanan jasa masyarakat desa.
-    </p>
-    <p><strong>Buka setiap hari:</strong> 07.00 – 17.00 WIB</p>
+<div class="hero">
+  <h2>Selamat Datang di Marketplace Warga Desa!</h2>
+  <p>Temukan produk lokal berkualitas dari warga Desa Keling: sayur segar, UMKM, kerajinan, sembako, hingga jasa harian!</p>
+  <a href="produk.html" class="btn">Lihat Produk</a>
+  <a href="jual.html" class="btn">Jual Produk</a>
+</div>
 
-    <h3>Produk Unggulan</h3>
-    <ul>
-      <li>🥬 Sayur Mayur Segar</li>
-      <li>🍚 Beras & Sembako</li>
-      <li>🧵 Kerajinan Tangan Lokal</li>
-      <li>🍯 Produk UMKM</li>
-      <li>🧼 Sabun, Herbal, dan Jamu</li>
-    </ul>
+<div class="produk">
+  <h3>Produk Unggulan</h3>
+  <ul>
+    <li>🥬 Sayur Mayur Segar</li>
+    <li>🍚 Beras & Sembako</li>
+    <li>🧵 Kerajinan Tangan Lokal</li>
+    <li>🍯 Produk UMKM</li>
+    <li>🧼 Sabun, Herbal, dan Jamu</li>
+  </ul>
+</div>
 
-    <section id="kontak">
-      <h3>Kontak Kami</h3>
-      <p>📞 <strong>Admin WA:</strong> <a href="https://wa.me/6282228278397" target="_blank">0822-2827-8397</a></p>
-      <p>📧 <strong>Email:</strong> <a href="mailto:mitrautamaconsultindo@gmail.com">mitrautamaconsultindo@gmail.com</a></p>
-      <p>📍 <strong>Alamat Gerai:</strong><br>
-        Jl. Raya Keling, Bukaan, Keling, Kec. Kepung,<br>
-        Kabupaten Kediri, Jawa Timur 64293</p>
-    </section>
-  </div>
-
-  <footer>
-    &copy; 2025 Pasar Suryaloka Keling – Developed by CV Mitra Utama Consultindo
-  </footer>
+<footer>
+  &copy; 2025 Pasar Suryaloka Keling | Developed by CV Mitra Utama Consultindo
+</footer>
 
 </body>
 </html>
