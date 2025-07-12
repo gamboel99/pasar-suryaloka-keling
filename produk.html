@@ -73,7 +73,7 @@
 
   async function loadProduk() {
     const { data, error } = await supabase
-      .from("Produk") // Perhatikan huruf "P" besar sesuai nama tabel
+      .from("Produk") // Pastikan P besar
       .select("*")
       .order("created_at", { ascending: false });
 
@@ -83,7 +83,7 @@
     }
 
     if (!data || data.length === 0) {
-      produkList.innerHTML = `<p>Belum ada produk yang ditampilkan.</p>`;
+      produkList.innerHTML = `<p>Belum ada produk ditampilkan.</p>`;
       return;
     }
 
@@ -96,7 +96,7 @@
       card.innerHTML = `
         <img src="${item.gambar_url}" alt="${item.nama_produk}" />
         <h3>${item.nama_produk}</h3>
-        <p class="harga">Rp ${item.harga.toLocaleString()}</p>
+        <p class="harga">Rp ${item.harga.toLocaleString("id-ID")}</p>
         <p>${item.deskripsi || ""}</p>
         <p>📞 <a href="https://wa.me/${item.kontak}" target="_blank">${item.kontak}</a></p>
       `;
