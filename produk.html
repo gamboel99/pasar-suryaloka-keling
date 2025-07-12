@@ -74,18 +74,20 @@
 <input type="text" id="searchInput" placeholder="🔍 Cari produk... (cth: sabun, beras, kerajinan)" />
 <div class="produk-grid" id="produkList">⏳ Memuat produk...</div>
 
+<!-- Script Supabase dan logika -->
 <script>
-  // ✅ Inisialisasi Supabase
+  // Inisialisasi Supabase HARUS setelah SDK dimuat
   const supabaseUrl = 'https://fyiedhszxdkhuqopxoaw.supabase.co';
   const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ5aWVkaHN6eGRraHVxb3B4b2F3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTIyODQ3MTksImV4cCI6MjA2Nzg2MDcxOX0.87Ri-pQtNDVk5t9e7POlayVOAdgGnlKgq9Z9VbcaLW0';
-  const supabase = supabase.createClient(supabaseUrl, supabaseKey);
+  const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
 
   const produkList = document.getElementById("produkList");
   const searchInput = document.getElementById("searchInput");
   let allProduk = [];
 
-  // ✅ Fungsi untuk memuat produk dari Supabase
   async function loadProduk() {
+    produkList.innerHTML = "⏳ Memuat produk...";
+    
     const { data, error } = await supabase
       .from("Produk")
       .select("*")
@@ -100,7 +102,6 @@
     displayProduk(data);
   }
 
-  // ✅ Tampilkan produk
   function displayProduk(data) {
     produkList.innerHTML = "";
 
@@ -113,27 +114,20 @@
       const card = document.createElement("div");
       card.className = "produk-item";
 
-      // Format nomor WA: 08xxx → +628xxx
-      let wa = item.kontak;
-      if (wa.startsWith("08")) {
-        wa = "+62" + wa.slice(1);
-      } else if (wa.startsWith("62")) {
-        wa = "+" + wa;
-      }
+      const noWa = item.kontak.startsWith("62") ? item.kontak : "62" + item.kontak.replace(/^0+/, "");
 
       card.innerHTML = `
         <img src="${item.gambar_url}" alt="${item.nama_produk}" />
         <h3>${item.nama_produk}</h3>
         <p class="harga">Rp ${item.harga.toLocaleString()}</p>
         <p>${item.deskripsi || ""}</p>
-        <p>📞 <a href="https://wa.me/${wa}" target="_blank">${item.kontak}</a></p>
+        <p>📞 <a href="https://wa.me/${noWa}" target="_blank">${item.kontak}</a></p>
       `;
 
       produkList.appendChild(card);
     });
   }
 
-  // ✅ Fitur pencarian
   searchInput.addEventListener("input", () => {
     const keyword = searchInput.value.toLowerCase();
     const filtered = allProduk.filter(item =>
@@ -143,7 +137,6 @@
     displayProduk(filtered);
   });
 
-  // 🚀 Mulai muat data saat halaman dibuka
   loadProduk();
 </script>
 
