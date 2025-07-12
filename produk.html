@@ -112,6 +112,8 @@
       margin-top: 40px;
     }
   </style>
+
+  <!-- Supabase Library -->
   <script src="https://unpkg.com/@supabase/supabase-js"></script>
 </head>
 <body>
@@ -139,10 +141,11 @@
   &copy; 2025 Pasar Suryaloka Keling | CV Mitra Utama Consultindo
 </footer>
 
+<!-- SCRIPT: HARUS SETELAH LIBRARY & DIURUTKAN -->
 <script>
   const { createClient } = supabase;
   const supabaseUrl = 'https://fyiedhszxdkhuqopxoaw.supabase.co';
-  const supabaseKey = 'eyJhbGciOi...'; // pakai key asli kamu
+  const supabaseKey = 'PASTE_KEY_KAMU_DI_SINI';
   const supabase = createClient(supabaseUrl, supabaseKey);
 
   const produkList = document.getElementById("produkList");
@@ -191,7 +194,7 @@
     });
   }
 
-  // Pencarian
+  // Fitur pencarian
   searchInput.addEventListener("input", () => {
     const keyword = searchInput.value.toLowerCase();
     const hasil = allProduk.filter(p =>
