@@ -3,34 +3,110 @@
 <head>
   <meta charset="UTF-8" />
   <title>Produk - Pasar Suryaloka Keling</title>
-  <link rel="stylesheet" href="style.css" />
+  <script src="https://unpkg.com/@supabase/supabase-js"></script>
+  <style>
+    body {
+      font-family: sans-serif;
+      background-color: #f1fff1;
+      margin: 0;
+      padding: 20px;
+    }
+
+    h1 {
+      text-align: center;
+      color: #2e7d32;
+    }
+
+    .produk-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 20px;
+      max-width: 1000px;
+      margin: auto;
+    }
+
+    .produk-item {
+      background-color: #ffffff;
+      border: 1px solid #c8e6c9;
+      border-radius: 10px;
+      padding: 15px;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+      text-align: center;
+    }
+
+    .produk-item img {
+      max-width: 100%;
+      height: 200px;
+      object-fit: cover;
+      border-radius: 6px;
+    }
+
+    .produk-item h3 {
+      margin: 10px 0 5px;
+      color: #007e33;
+    }
+
+    .produk-item p {
+      margin: 5px 0;
+      color: #333;
+      font-size: 14px;
+    }
+
+    .harga {
+      font-weight: bold;
+      color: #d32f2f;
+    }
+  </style>
 </head>
 <body>
-  <header>
-    <h1>Produk Pasar Suryaloka Keling</h1>
-    <nav>
-      <ul>
-        <li><a href="index.html">Beranda</a></li>
-        <li><a href="produk.html">Produk</a></li>
-        <li><a href="tentang.html">Tentang</a></li>
-        <li><a href="kontak.html">Kontak</a></li>
-      </ul>
-    </nav>
-  </header>
 
-  <main class="container">
-    <h2>Daftar Produk</h2>
-    <ul class="produk-list">
-      <li>🥬 Kangkung Segar – Rp 3.000 / ikat</li>
-      <li>🍚 Beras Lokal – Rp 11.000 / kg</li>
-      <li>🍯 Madu Hutan – Rp 35.000 / botol</li>
-      <li>🧼 Sabun Herbal – Rp 6.000 / batang</li>
-      <li>🧵 Tas Rajut UMKM – Rp 75.000</li>
-    </ul>
-  </main>
+<h1>Produk di Pasar Suryaloka Keling</h1>
+<div class="produk-grid" id="produkList">⏳ Memuat produk...</div>
 
-  <footer>
-    <p>&copy; 2025 Pasar Suryaloka Keling. Dikembangkan oleh CV Mitra Utama Consultindo.</p>
-  </footer>
+<script>
+  const { createClient } = supabase;
+  const supabaseUrl = 'https://fyiedhszxdkhuqopxoaw.supabase.co';
+  const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ5aWVkaHN6eGRraHVxb3B4b2F3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTIyODQ3MTksImV4cCI6MjA2Nzg2MDcxOX0.87Ri-pQtNDVk5t9e7POlayVOAdgGnlKgq9Z9VbcaLW0';
+  const supabaseClient = createClient(supabaseUrl, supabaseKey);
+
+  const produkList = document.getElementById("produkList");
+
+  async function loadProduk() {
+    const { data, error } = await supabaseClient
+      .from("produk")
+      .select("*")
+      .order("created_at", { ascending: false });
+
+    if (error) {
+      produkList.innerHTML = `<p>❌ Gagal memuat produk: ${error.message}</p>`;
+      return;
+    }
+
+    if (data.length === 0) {
+      produkList.innerHTML = `<p>Belum ada produk yang ditampilkan.</p>`;
+      return;
+    }
+
+    produkList.innerHTML = "";
+
+    data.forEach((item) => {
+      const card = document.createElement("div");
+      card.className = "produk-item";
+
+      card.innerHTML = `
+        <img src="${item.gambar_url}" alt="${item.nama_produk}" />
+        <h3>${item.nama_produk}</h3>
+        <p class="harga">Rp ${item.harga.toLocaleString()}</p>
+        <p>${item.deskripsi || ""}</p>
+        <p>📞 <a href="https://wa.me/${item.kontak}" target="_blank">${item.kontak}</a></p>
+      `;
+
+      produkList.appendChild(card);
+    });
+  }
+
+  loadProduk();
+</script>
+
 </body>
 </html>
