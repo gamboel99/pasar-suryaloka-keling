@@ -2,15 +2,15 @@
 <html lang="id">
 <head>
   <meta charset="UTF-8" />
-  <title>Jual Produk</title>
+  <title>Jual Produk - Pasar Suryaloka Keling</title>
   <style>
     body { font-family: sans-serif; padding: 20px; background: #f1fff1; }
     form { max-width: 400px; margin: auto; background: white; padding: 20px; border-radius: 10px; }
     input, textarea { width: 100%; margin-bottom: 10px; padding: 8px; }
     button { padding: 10px 20px; background: #00c853; color: white; border: none; cursor: pointer; }
     #status { margin-top: 10px; text-align: center; font-weight: bold; }
-    .back-btn { text-align: center; margin-top: 20px; }
-    .back-btn a { background: #00c853; color: white; padding: 10px 20px; text-decoration: none; border-radius: 6px; }
+    .back { text-align: center; margin-top: 20px; }
+    .back a { color: #007e33; text-decoration: none; font-weight: bold; }
   </style>
   <script src="https://unpkg.com/@supabase/supabase-js"></script>
 </head>
@@ -28,15 +28,15 @@
   <p id="status"></p>
 </form>
 
-<div class="back-btn">
-  <a href="index.html">⬅️ Kembali ke Beranda</a>
+<div class="back">
+  <a href="index.html">← Kembali ke Beranda</a>
 </div>
 
 <script>
-  const supabase = supabase.createClient(
-    'https://fyiedhszxdkhuqopxoaw.supabase.co',
-    'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ5aWVkaHN6eGRraHVxb3B4b2F3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTIyODQ3MTksImV4cCI6MjA2Nzg2MDcxOX0.87Ri-pQtNDVk5t9e7POlayVOAdgGnlKgq9Z9VbcaLW0'
-  );
+  const { createClient } = supabase;
+  const supabaseUrl = 'https://fyiedhszxdkhuqopxoaw.supabase.co';
+  const supabaseKey = 'YOUR_PUBLIC_ANON_KEY'; // Ganti dengan anon key Anda
+  const supabaseClient = createClient(supabaseUrl, supabaseKey);
 
   const form = document.getElementById("produkForm");
   const status = document.getElementById("status");
@@ -52,7 +52,8 @@
     const file = document.getElementById("gambar").files[0];
 
     const fileName = `${Date.now()}-${file.name}`;
-    const { data: imgData, error: imgErr } = await supabase.storage
+    const { data: imgData, error: imgErr } = await supabaseClient
+      .storage
       .from('produk-images')
       .upload(fileName, file);
 
@@ -61,25 +62,26 @@
       return;
     }
 
-    const { data: publicUrlData } = supabase.storage
+    const { data: publicUrlData } = supabaseClient
+      .storage
       .from('produk-images')
       .getPublicUrl(fileName);
 
     const gambar_url = publicUrlData.publicUrl;
 
-    const { error } = await supabase
+    const { error } = await supabaseClient
       .from('Produk')
-      .insert([{ 
-        nama_produk: nama, 
-        harga, 
-        deskripsi, 
-        kontak, 
-        gambar_url, 
-        aktif: true 
+      .insert([{
+        nama_produk: nama,
+        harga,
+        deskripsi,
+        kontak,
+        gambar_url,
+        aktif: true  // ⬅️ otomatis aktif
       }]);
 
     if (error) {
-      status.innerText = "❌ Gagal menyimpan: " + error.message;
+      status.innerText = "❌ Gagal menyimpan data: " + error.message;
     } else {
       status.innerText = "✅ Produk berhasil dikirim!";
       form.reset();
