@@ -66,51 +66,14 @@
 <script>
   const { createClient } = supabase;
   const supabaseUrl = 'https://fyiedhszxdkhuqopxoaw.supabase.co';
-  const supabaseKey = 'eyJhbGciOi...'; // masukkan anon public key kamu di sini
-  const supabaseClient = createClient(supabaseUrl, supabaseKey);
-
-  const produkList = document.getElementById("produkList");
-
-  async function loadProduk() {
-    const { data, error } = await supabaseClient
-      .from("Produk")  // Pastikan huruf P BESAR (cocok dengan Supabase)
-      .select("*")
-      .order("created_at", { ascending: false });
-
-    if (error) {
-      produkList.innerHTML = `<p>❌ Gagal memuat Produk: ${error.message}</p>`;
-      return;
-    }
-
-    if (data.length === 0) {
-      produkList.innerHTML = `<p>Belum ada produk ditampilkan.</p>`;
-      return;
-    }
-
-    produkList.innerHTML = "";
-
-    data.forEach((item) => {
-      const card = document.createElement("div");
-      card.className = "Produk-item";
-      card.innerHTML = `
-        <img src="${item.gambar_url}" alt="${item.nama_produk}" />
-        <h3>${item.nama_produk}</h3>
-        <p class="harga">Rp ${item.harga.toLocaleString()}</p>
-        <p>${item.deskripsi || ""}</p>
-        <p>📞 <a href="https://wa.me/${item.kontak}" target="_blank">${item.kontak}</a></p>
-      `;
-      produkList.appendChild(card);
-    });
-  }
-
-  loadProduk();
-</script>
+  const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ5aWVkaHN6eGRraHVxb3B4b2F3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTIyODQ3MTksImV4cCI6MjA2Nzg2MDcxOX0.87Ri-pQtNDVk5t9e7POlayVOAdgGnlKgq9Z9VbcaLW0';
+  const supabase = createClient(supabaseUrl, supabaseKey);
 
   const produkList = document.getElementById("produkList");
 
   async function loadProduk() {
     const { data, error } = await supabase
-      .from("Produk") // ⚠️ Pakai huruf besar "P"
+      .from("Produk") // Perhatikan huruf "P" besar sesuai nama tabel
       .select("*")
       .order("created_at", { ascending: false });
 
@@ -119,7 +82,7 @@
       return;
     }
 
-    if (data.length === 0) {
+    if (!data || data.length === 0) {
       produkList.innerHTML = `<p>Belum ada produk yang ditampilkan.</p>`;
       return;
     }
@@ -133,7 +96,7 @@
       card.innerHTML = `
         <img src="${item.gambar_url}" alt="${item.nama_produk}" />
         <h3>${item.nama_produk}</h3>
-        <p class="harga">Rp ${item.harga?.toLocaleString() || 'N/A'}</p>
+        <p class="harga">Rp ${item.harga.toLocaleString()}</p>
         <p>${item.deskripsi || ""}</p>
         <p>📞 <a href="https://wa.me/${item.kontak}" target="_blank">${item.kontak}</a></p>
       `;
