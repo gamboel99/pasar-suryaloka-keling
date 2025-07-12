@@ -75,17 +75,16 @@
 <div class="produk-grid" id="produkList">⏳ Memuat produk...</div>
 
 <script>
-  const { createClient } = supabase;
   const supabaseUrl = 'https://fyiedhszxdkhuqopxoaw.supabase.co';
   const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ5aWVkaHN6eGRraHVxb3B4b2F3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTIyODQ3MTksImV4cCI6MjA2Nzg2MDcxOX0.87Ri-pQtNDVk5t9e7POlayVOAdgGnlKgq9Z9VbcaLW0';
-  const supabaseClient = createClient(supabaseUrl, supabaseKey);
+  const supabase = supabase.createClient(supabaseUrl, supabaseKey);
 
   const produkList = document.getElementById("produkList");
   const searchInput = document.getElementById("searchInput");
   let allProduk = [];
 
   async function loadProduk() {
-    const { data, error } = await supabaseClient
+    const { data, error } = await supabase
       .from("Produk")
       .select("*")
       .order("created_at", { ascending: false });
