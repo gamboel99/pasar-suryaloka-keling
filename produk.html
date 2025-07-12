@@ -1,10 +1,9 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-  <meta charset="UTF-8">
+  <meta charset="UTF-8" />
   <title>Produk - Pasar Suryaloka Keling</title>
   <script src="https://unpkg.com/@supabase/supabase-js"></script>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <style>
     body {
       font-family: sans-serif;
@@ -18,18 +17,12 @@
       color: #2e7d32;
     }
 
-    .search-box {
-      max-width: 400px;
+    #searchBox {
+      display: block;
       margin: 10px auto 20px;
-      text-align: center;
-    }
-
-    .search-box input {
-      width: 90%;
       padding: 10px;
+      width: 300px;
       font-size: 16px;
-      border: 1px solid #ccc;
-      border-radius: 6px;
     }
 
     .produk-grid {
@@ -72,99 +65,93 @@
       color: #d32f2f;
     }
 
-    .kembali {
+    .kembali-link {
       display: block;
-      margin: 30px auto 0;
       text-align: center;
+      margin-top: 30px;
     }
 
-    .kembali a {
+    .kembali-link a {
+      color: #00695c;
       text-decoration: none;
-      background-color: #00c853;
-      color: white;
-      padding: 10px 20px;
-      border-radius: 6px;
+      font-weight: bold;
     }
 
-    .kembali a:hover {
-      background-color: #009944;
+    .kembali-link a:hover {
+      text-decoration: underline;
     }
   </style>
 </head>
 <body>
 
-<h1>Produk di Pasar Suryaloka Keling</h1>
+  <h1>Produk di Pasar Suryaloka Keling</h1>
+  <input type="text" id="searchBox" placeholder="🔍 Cari produk..." />
+  <div class="produk-grid" id="produkList">⏳ Memuat produk...</div>
 
-<div class="search-box">
-  <input type="text" id="searchInput" placeholder="🔍 Cari produk...">
-</div>
+  <div class="kembali-link">
+    <a href="index.html">⬅️ Kembali ke Beranda</a>
+  </div>
 
-<div class="produk-grid" id="produkList">⏳ Memuat produk...</div>
+  <script>
+    const { createClient } = supabase;
+    const supabaseUrl = 'https://fyiedhszxdkhuqopxoaw.supabase.co';
+    const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ5aWVkaHN6eGRraHVxb3B4b2F3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTIyODQ3MTksImV4cCI6MjA2Nzg2MDcxOX0.87Ri-pQtNDVk5t9e7POlayVOAdgGnlKgq9Z9VbcaLW0';
+    const supabaseClient = createClient(supabaseUrl, supabaseKey);
 
-<div class="kembali">
-  <a href="index.html">⬅️ Kembali ke Beranda</a>
-</div>
+    const produkList = document.getElementById("produkList");
+    const searchBox = document.getElementById("searchBox");
+    let allProduk = [];
 
-<script>
-  const { createClient } = window.supabase;
-  const supabaseUrl = 'https://fyiedhszxdkhuqopxoaw.supabase.co';
-  const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ5aWVkaHN6eGRraHVxb3B4b2F3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTIyODQ3MTksImV4cCI6MjA2Nzg2MDcxOX0.87Ri-pQtNDVk5t9e7POlayVOAdgGnlKgq9Z9VbcaLW0';
-  const supabase = createClient(supabaseUrl, supabaseKey);
+    async function loadProduk() {
+      const { data, error } = await supabaseClient
+        .from("Produk")
+        .select("*")
+        .order("created_at", { ascending: false });
 
-  const produkList = document.getElementById("produkList");
-  const searchInput = document.getElementById("searchInput");
+      if (error) {
+        produkList.innerHTML = `<p>❌ Gagal memuat produk: ${error.message}</p>`;
+        return;
+      }
 
-  let allProduk = [];
-
-  async function loadProduk() {
-    const { data, error } = await supabase
-      .from("Produk")
-      .select("*")
-      .order("created_at", { ascending: false });
-
-    if (error) {
-      produkList.innerHTML = `<p>❌ Gagal memuat produk: ${error.message}</p>`;
-      return;
+      allProduk = data;
+      renderProduk(data);
     }
 
-    allProduk = data;
-    tampilkanProduk(data);
-  }
+    function renderProduk(produkArray) {
+      if (produkArray.length === 0) {
+        produkList.innerHTML = `<p>Belum ada produk yang ditampilkan.</p>`;
+        return;
+      }
 
-  function tampilkanProduk(data) {
-    if (!data || data.length === 0) {
-      produkList.innerHTML = `<p>Belum ada produk yang ditampilkan.</p>`;
-      return;
+      produkList.innerHTML = "";
+
+      produkArray.forEach((item) => {
+        const card = document.createElement("div");
+        card.className = "produk-item";
+
+        card.innerHTML = `
+          <img src="${item.gambar_url}" alt="${item.nama_produk}" />
+          <h3>${item.nama_produk}</h3>
+          <p class="harga">Rp ${item.harga.toLocaleString("id-ID")}</p>
+          <p>${item.deskripsi || ""}</p>
+          <p>📞 <a href="https://wa.me/${item.kontak}" target="_blank">${item.kontak}</a></p>
+        `;
+
+        produkList.appendChild(card);
+      });
     }
 
-    produkList.innerHTML = "";
-
-    data.forEach((item) => {
-      const card = document.createElement("div");
-      card.className = "produk-item";
-
-      card.innerHTML = `
-        <img src="${item.gambar_url}" alt="${item.nama_produk}" />
-        <h3>${item.nama_produk}</h3>
-        <p class="harga">Rp ${item.harga.toLocaleString("id-ID")}</p>
-        <p>${item.deskripsi || ""}</p>
-        <p>📞 <a href="https://wa.me/082228278397" target="_blank">082228278397</a></p>
-      `;
-
-      produkList.appendChild(card);
+    // Fitur pencarian
+    searchBox.addEventListener("input", () => {
+      const keyword = searchBox.value.toLowerCase();
+      const hasilFilter = allProduk.filter((item) =>
+        item.nama_produk.toLowerCase().includes(keyword) ||
+        (item.deskripsi && item.deskripsi.toLowerCase().includes(keyword))
+      );
+      renderProduk(hasilFilter);
     });
-  }
 
-  searchInput.addEventListener("input", () => {
-    const keyword = searchInput.value.toLowerCase();
-    const hasilFilter = allProduk.filter((item) =>
-      item.nama_produk.toLowerCase().includes(keyword)
-    );
-    tampilkanProduk(hasilFilter);
-  });
-
-  loadProduk();
-</script>
-
+    loadProduk();
+  </script>
 </body>
 </html>
