@@ -3,7 +3,6 @@
 <head>
   <meta charset="UTF-8" />
   <title>Produk - Pasar Suryaloka Keling</title>
-  <script src="https://unpkg.com/@supabase/supabase-js"></script>
   <style>
     body {
       font-family: sans-serif;
@@ -58,7 +57,6 @@
     }
 
     .back-btn {
-      display: block;
       text-align: center;
       margin-top: 20px;
     }
@@ -81,16 +79,19 @@
   <a href="index.html">⬅️ Kembali ke Beranda</a>
 </div>
 
+<!-- Load Supabase JS -->
+<script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+
+<!-- Supabase logic -->
 <script>
-  const { createClient } = supabase;
-  const supabaseClient = createClient(
-    'https://fyiedhszxdkhuqopxoaw.supabase.co',
-    'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ5aWVkaHN6eGRraHVxb3B4b2F3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTIyODQ3MTksImV4cCI6MjA2Nzg2MDcxOX0.87Ri-pQtNDVk5t9e7POlayVOAdgGnlKgq9Z9VbcaLW0'
-  );
+  document.addEventListener('DOMContentLoaded', async () => {
+    const { createClient } = supabase;
+    const supabaseUrl = 'https://fyiedhszxdkhuqopxoaw.supabase.co';
+    const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ5aWVkaHN6eGRraHVxb3B4b2F3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTIyODQ3MTksImV4cCI6MjA2Nzg2MDcxOX0.87Ri-pQtNDVk5t9e7POlayVOAdgGnlKgq9Z9VbcaLW0';
+    const supabaseClient = createClient(supabaseUrl, supabaseKey);
 
-  const produkList = document.getElementById("produkList");
+    const produkList = document.getElementById("produkList");
 
-  async function loadProduk() {
     const { data, error } = await supabaseClient
       .from("Produk")
       .select("*")
@@ -116,16 +117,14 @@
       card.innerHTML = `
         <img src="${item.gambar_url}" alt="${item.nama_produk}" />
         <h3>${item.nama_produk}</h3>
-        <p class="harga">Rp ${item.harga.toLocaleString()}</p>
+        <p class="harga">Rp ${item.harga.toLocaleString("id-ID")}</p>
         <p>${item.deskripsi || ""}</p>
         <p>📞 <a href="https://wa.me/${item.kontak}" target="_blank">${item.kontak}</a></p>
       `;
 
       produkList.appendChild(card);
     });
-  }
-
-  loadProduk();
+  });
 </script>
 
 </body>
