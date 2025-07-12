@@ -19,12 +19,12 @@
 
     #searchInput {
       display: block;
-      margin: 20px auto;
-      max-width: 400px;
+      margin: 0 auto 20px;
       padding: 10px;
-      font-size: 16px;
+      width: 90%;
+      max-width: 400px;
       border: 1px solid #ccc;
-      border-radius: 5px;
+      border-radius: 6px;
     }
 
     .produk-grid {
@@ -66,55 +66,44 @@
       font-weight: bold;
       color: #d32f2f;
     }
-
-    .kontak-link {
-      display: inline-block;
-      margin-top: 10px;
-      padding: 8px 12px;
-      background: #25d366;
-      color: white;
-      text-decoration: none;
-      border-radius: 5px;
-    }
   </style>
 </head>
 <body>
 
 <h1>Produk di Pasar Suryaloka Keling</h1>
 <input type="text" id="searchInput" placeholder="🔍 Cari produk... (cth: sabun, beras, kerajinan)" />
-
 <div class="produk-grid" id="produkList">⏳ Memuat produk...</div>
 
 <script>
+  const { createClient } = supabase;
   const supabaseUrl = 'https://fyiedhszxdkhuqopxoaw.supabase.co';
-  const supabaseKey = 'YOUR_SUPABASE_ANON_KEY'; // Ganti ini
-  const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
+  const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ5aWVkaHN6eGRraHVxb3B4b2F3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTIyODQ3MTksImV4cCI6MjA2Nzg2MDcxOX0.87Ri-pQtNDVk5t9e7POlayVOAdgGnlKgq9Z9VbcaLW0';
+  const supabaseClient = createClient(supabaseUrl, supabaseKey);
 
-  let semuaProduk = [];
+  const produkList = document.getElementById("produkList");
+  const searchInput = document.getElementById("searchInput");
+  let allProduk = [];
 
   async function loadProduk() {
-    const { data, error } = await supabase
+    const { data, error } = await supabaseClient
       .from("Produk")
       .select("*")
       .order("created_at", { ascending: false });
-
-    const produkList = document.getElementById("produkList");
 
     if (error) {
       produkList.innerHTML = `<p>❌ Gagal memuat Produk: ${error.message}</p>`;
       return;
     }
 
-    semuaProduk = data;
-    tampilkanProduk(semuaProduk);
+    allProduk = data;
+    displayProduk(data);
   }
 
-  function tampilkanProduk(data) {
-    const produkList = document.getElementById("produkList");
+  function displayProduk(data) {
     produkList.innerHTML = "";
 
     if (data.length === 0) {
-      produkList.innerHTML = "<p>🚫 Tidak ada produk ditemukan.</p>";
+      produkList.innerHTML = "<p>Tidak ada produk ditemukan.</p>";
       return;
     }
 
@@ -127,22 +116,20 @@
         <h3>${item.nama_produk}</h3>
         <p class="harga">Rp ${item.harga.toLocaleString()}</p>
         <p>${item.deskripsi || ""}</p>
-        <a class="kontak-link" href="https://wa.me/${item.kontak}" target="_blank">Chat via WhatsApp</a>
+        <p>📞 <a href="https://wa.me/${item.kontak}" target="_blank">${item.kontak}</a></p>
       `;
 
       produkList.appendChild(card);
     });
   }
 
-  // Pencarian
-  const searchInput = document.getElementById("searchInput");
   searchInput.addEventListener("input", () => {
     const keyword = searchInput.value.toLowerCase();
-    const hasil = semuaProduk.filter(p =>
-      p.nama_produk.toLowerCase().includes(keyword) ||
-      (p.deskripsi || "").toLowerCase().includes(keyword)
+    const filtered = allProduk.filter(item =>
+      item.nama_produk.toLowerCase().includes(keyword) ||
+      (item.deskripsi || "").toLowerCase().includes(keyword)
     );
-    tampilkanProduk(hasil);
+    displayProduk(filtered);
   });
 
   loadProduk();
