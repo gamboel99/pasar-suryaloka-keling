@@ -17,6 +17,21 @@
       color: #2e7d32;
     }
 
+    .back-btn {
+      display: flex;
+      justify-content: center;
+      margin-bottom: 20px;
+    }
+
+    .back-btn a button {
+      padding: 10px 20px;
+      background-color: #2e7d32;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+
     #searchInput {
       display: block;
       margin: 0 auto 20px;
@@ -70,75 +85,76 @@
 </head>
 <body>
 
-<h1>Produk di Pasar Suryaloka Keling</h1>
-<input type="text" id="searchInput" placeholder="🔍 Cari produk... (cth: sabun, beras, kerajinan)" />
-<div class="produk-grid" id="produkList">⏳ Memuat produk...</div>
+  <h1>Produk di Pasar Suryaloka Keling</h1>
+  
+  <div class="back-btn">
+    <a href="index.html">
+      <button>⬅️ Kembali ke Beranda</button>
+    </a>
+  </div>
 
-<!-- Script Supabase dan logika -->
-<script>
-  // Inisialisasi Supabase HARUS setelah SDK dimuat
-  const supabaseUrl = 'https://fyiedhszxdkhuqopxoaw.supabase.co';
-  const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ5aWVkaHN6eGRraHVxb3B4b2F3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTIyODQ3MTksImV4cCI6MjA2Nzg2MDcxOX0.87Ri-pQtNDVk5t9e7POlayVOAdgGnlKgq9Z9VbcaLW0';
-  const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
+  <input type="text" id="searchInput" placeholder="🔍 Cari produk... (cth: sabun, beras, kerajinan)" />
+  <div class="produk-grid" id="produkList">⏳ Memuat produk...</div>
 
-  const produkList = document.getElementById("produkList");
-  const searchInput = document.getElementById("searchInput");
-  let allProduk = [];
+  <script>
+    const supabaseUrl = 'https://fyiedhszxdkhuqopxoaw.supabase.co';
+    const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ5aWVkaHN6eGRraHVxb3B4b2F3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTIyODQ3MTksImV4cCI6MjA2Nzg2MDcxOX0.87Ri-pQtNDVk5t9e7POlayVOAdgGnlKgq9Z9VbcaLW0';
+    const supabase = supabase.createClient(supabaseUrl, supabaseKey);
 
-  async function loadProduk() {
-    produkList.innerHTML = "⏳ Memuat produk...";
-    
-    const { data, error } = await supabase
-      .from("Produk")
-      .select("*")
-      .order("created_at", { ascending: false });
+    const produkList = document.getElementById("produkList");
+    const searchInput = document.getElementById("searchInput");
+    let allProduk = [];
 
-    if (error) {
-      produkList.innerHTML = `<p>❌ Gagal memuat Produk: ${error.message}</p>`;
-      return;
+    async function loadProduk() {
+      const { data, error } = await supabase
+        .from("Produk")
+        .select("*")
+        .order("created_at", { ascending: false });
+
+      if (error) {
+        produkList.innerHTML = `<p>❌ Gagal memuat Produk: ${error.message}</p>`;
+        return;
+      }
+
+      allProduk = data;
+      displayProduk(data);
     }
 
-    allProduk = data;
-    displayProduk(data);
-  }
+    function displayProduk(data) {
+      produkList.innerHTML = "";
 
-  function displayProduk(data) {
-    produkList.innerHTML = "";
+      if (data.length === 0) {
+        produkList.innerHTML = "<p>Tidak ada produk ditemukan.</p>";
+        return;
+      }
 
-    if (data.length === 0) {
-      produkList.innerHTML = "<p>Tidak ada produk ditemukan.</p>";
-      return;
+      data.forEach((item) => {
+        const card = document.createElement("div");
+        card.className = "produk-item";
+
+        card.innerHTML = `
+          <img src="${item.gambar_url}" alt="${item.nama_produk}" />
+          <h3>${item.nama_produk}</h3>
+          <p class="harga">Rp ${item.harga.toLocaleString()}</p>
+          <p>${item.deskripsi || ""}</p>
+          <p>📞 <a href="https://wa.me/${item.kontak}" target="_blank">${item.kontak}</a></p>
+        `;
+
+        produkList.appendChild(card);
+      });
     }
 
-    data.forEach((item) => {
-      const card = document.createElement("div");
-      card.className = "produk-item";
-
-      const noWa = item.kontak.startsWith("62") ? item.kontak : "62" + item.kontak.replace(/^0+/, "");
-
-      card.innerHTML = `
-        <img src="${item.gambar_url}" alt="${item.nama_produk}" />
-        <h3>${item.nama_produk}</h3>
-        <p class="harga">Rp ${item.harga.toLocaleString()}</p>
-        <p>${item.deskripsi || ""}</p>
-        <p>📞 <a href="https://wa.me/${noWa}" target="_blank">${item.kontak}</a></p>
-      `;
-
-      produkList.appendChild(card);
+    searchInput.addEventListener("input", () => {
+      const keyword = searchInput.value.toLowerCase();
+      const filtered = allProduk.filter(item =>
+        item.nama_produk.toLowerCase().includes(keyword) ||
+        (item.deskripsi || "").toLowerCase().includes(keyword)
+      );
+      displayProduk(filtered);
     });
-  }
 
-  searchInput.addEventListener("input", () => {
-    const keyword = searchInput.value.toLowerCase();
-    const filtered = allProduk.filter(item =>
-      item.nama_produk.toLowerCase().includes(keyword) ||
-      (item.deskripsi || "").toLowerCase().includes(keyword)
-    );
-    displayProduk(filtered);
-  });
-
-  loadProduk();
-</script>
+    loadProduk();
+  </script>
 
 </body>
 </html>
