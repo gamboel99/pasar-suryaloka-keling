@@ -1,14 +1,13 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-  <meta charset="UTF-8" />
+  <meta charset="UTF-8">
   <title>Jual Produk - Pasar Suryaloka Keling</title>
   <script src="https://unpkg.com/@supabase/supabase-js"></script>
   <style>
     body {
       font-family: sans-serif;
-      background-color: #f1fff1;
-      margin: 0;
+      background-color: #fffef9;
       padding: 20px;
     }
 
@@ -17,132 +16,158 @@
       color: #2e7d32;
     }
 
-    form {
-      max-width: 500px;
-      margin: 20px auto;
-      padding: 20px;
-      background: white;
-      border-radius: 10px;
-      border: 1px solid #c8e6c9;
+    .back-btn {
+      display: flex;
+      justify-content: center;
+      margin-bottom: 20px;
     }
 
-    label {
-      display: block;
-      margin-top: 10px;
-      font-weight: bold;
-    }
-
-    input, textarea {
-      width: 100%;
-      padding: 8px;
-      margin-top: 4px;
-      box-sizing: border-box;
-    }
-
-    button {
-      margin-top: 15px;
-      padding: 10px;
-      width: 100%;
-      background-color: #4caf50;
+    .back-btn a button {
+      padding: 10px 20px;
+      background-color: #2e7d32;
       color: white;
       border: none;
       border-radius: 6px;
       cursor: pointer;
     }
 
-    .status {
-      text-align: center;
-      margin-top: 10px;
+    form {
+      max-width: 500px;
+      margin: auto;
+      background: #f1f8e9;
+      padding: 20px;
+      border-radius: 10px;
+    }
+
+    label {
+      display: block;
+      margin-top: 15px;
       font-weight: bold;
+    }
+
+    input, textarea {
+      width: 100%;
+      padding: 8px;
+      margin-top: 5px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+    }
+
+    button {
+      margin-top: 20px;
+      padding: 10px;
+      background-color: #007e33;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      width: 100%;
+    }
+
+    #status {
+      margin-top: 15px;
+      text-align: center;
+      color: #d32f2f;
     }
   </style>
 </head>
 <body>
 
-<h1>Form Penjualan Produk</h1>
-<form id="formJual">
-  <label>Nama Produk</label>
-  <input type="text" id="nama_produk" required />
+  <h1>Jual Produk Anda</h1>
 
-  <label>Harga (Rp)</label>
-  <input type="number" id="harga" required />
+  <div class="back-btn">
+    <a href="index.html">
+      <button>⬅️ Kembali ke Beranda</button>
+    </a>
+  </div>
 
-  <label>Deskripsi</label>
-  <textarea id="deskripsi"></textarea>
+  <form id="jualForm">
+    <label for="nama">Nama Produk</label>
+    <input type="text" id="nama" required>
 
-  <label>No WhatsApp Penjual</label>
-  <input type="text" id="kontak" placeholder="Contoh: 082212345678" required />
+    <label for="harga">Harga (Rp)</label>
+    <input type="number" id="harga" required>
 
-  <label>Gambar Produk</label>
-  <input type="file" id="gambar" accept="image/*" required />
+    <label for="deskripsi">Deskripsi</label>
+    <textarea id="deskripsi"></textarea>
 
-  <button type="submit">Kirim Produk</button>
-</form>
+    <label for="kontak">Nomor WhatsApp (tanpa +62)</label>
+    <input type="text" id="kontak" placeholder="Contoh: 82228278397" required>
 
-<div class="status" id="statusMsg"></div>
+    <label for="gambar">Upload Gambar</label>
+    <input type="file" id="gambar" accept="image/*" required>
 
-<script>
-  const supabaseUrl = 'https://fyiedhszxdkhuqopxoaw.supabase.co';
-  const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ5aWVkaHN6eGRraHVxb3B4b2F3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTIyODQ3MTksImV4cCI6MjA2Nzg2MDcxOX0.87Ri-pQtNDVk5t9e7POlayVOAdgGnlKgq9Z9VbcaLW0';
-  const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
+    <button type="submit">Kirim</button>
 
-  const form = document.getElementById("formJual");
-  const statusMsg = document.getElementById("statusMsg");
+    <div id="status"></div>
+  </form>
 
-  form.addEventListener("submit", async (e) => {
-    e.preventDefault();
-    statusMsg.textContent = "⏳ Mengunggah...";
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      const supabaseUrl = 'https://fyiedhszxdkhuqopxoaw.supabase.co';
+      const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ5aWVkaHN6eGRraHVxb3B4b2F3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTIyODQ3MTksImV4cCI6MjA2Nzg2MDcxOX0.87Ri-pQtNDVk5t9e7POlayVOAdgGnlKgq9Z9VbcaLW0';
+      const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
 
-    const nama_produk = document.getElementById("nama_produk").value;
-    const harga = parseInt(document.getElementById("harga").value);
-    const deskripsi = document.getElementById("deskripsi").value;
-    let kontak = document.getElementById("kontak").value.trim();
-    const gambarFile = document.getElementById("gambar").files[0];
+      const form = document.getElementById('jualForm');
+      const statusEl = document.getElementById('status');
 
-    // Validasi dan ubah nomor kontak ke +62
-    if (kontak.startsWith("0")) {
-      kontak = "62" + kontak.slice(1);
-    } else if (!kontak.startsWith("62")) {
-      kontak = "62" + kontak;
-    }
+      form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        statusEl.textContent = '⏳ Mengirim data...';
 
-    // Upload gambar ke bucket
-    const fileName = `${Date.now()}_${gambarFile.name}`;
-    const { data: uploadData, error: uploadError } = await supabase
-      .storage
-      .from('produk-images')
-      .upload(fileName, gambarFile);
+        const nama = document.getElementById('nama').value.trim();
+        const harga = parseInt(document.getElementById('harga').value.trim());
+        const deskripsi = document.getElementById('deskripsi').value.trim();
+        const kontak = document.getElementById('kontak').value.trim();
+        const file = document.getElementById('gambar').files[0];
 
-    if (uploadError) {
-      statusMsg.textContent = `❌ Gagal upload gambar: ${uploadError.message}`;
-      return;
-    }
+        if (!file) {
+          statusEl.textContent = '❌ Gambar harus diunggah.';
+          return;
+        }
 
-    const { data: urlData } = supabase
-      .storage
-      .from('produk-images')
-      .getPublicUrl(fileName);
-    const gambar_url = urlData.publicUrl;
+        const fileExt = file.name.split('.').pop();
+        const fileName = `${Date.now()}.${fileExt}`;
+        const filePath = `produk-images/${fileName}`;
 
-    // Simpan ke tabel Produk
-    const { error: insertError } = await supabase
-      .from("Produk")
-      .insert([{
-        nama_produk,
-        harga,
-        deskripsi,
-        kontak,
-        gambar_url
-      }]);
+        // Upload ke Supabase Storage
+        const { error: uploadError } = await supabase.storage
+          .from('produk-images')
+          .upload(filePath, file);
 
-    if (insertError) {
-      statusMsg.textContent = `❌ Gagal menyimpan data: ${insertError.message}`;
-    } else {
-      statusMsg.textContent = "✅ Produk berhasil dikirim!";
-      form.reset();
-    }
-  });
-</script>
+        if (uploadError) {
+          statusEl.textContent = `❌ Gagal upload gambar: ${uploadError.message}`;
+          return;
+        }
+
+        const { data: publicUrlData } = supabase
+          .storage
+          .from('produk-images')
+          .getPublicUrl(filePath);
+
+        const publicUrl = publicUrlData.publicUrl;
+
+        // Simpan ke database
+        const { error: insertError } = await supabase
+          .from('Produk')
+          .insert([{
+            nama_produk: nama,
+            harga: harga,
+            deskripsi: deskripsi,
+            kontak: `62${kontak.replace(/^0/, '')}`, // format nomor WA
+            gambar_url: publicUrl,
+            aktif: true
+          }]);
+
+        if (insertError) {
+          statusEl.textContent = `❌ Gagal menyimpan data: ${insertError.message}`;
+        } else {
+          statusEl.textContent = '✅ Produk berhasil dikirim!';
+          form.reset();
+        }
+      });
+    });
+  </script>
 
 </body>
 </html>
