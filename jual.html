@@ -35,7 +35,7 @@
 <script>
   const { createClient } = supabase;
   const supabaseUrl = 'https://fyiedhszxdkhuqopxoaw.supabase.co';
-  const supabaseKey = 'YOUR_PUBLIC_ANON_KEY'; // Ganti dengan anon key Anda
+  const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ5aWVkaHN6eGRraHVxb3B4b2F3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTIyODQ3MTksImV4cCI6MjA2Nzg2MDcxOX0.87Ri-pQtNDVk5t9e7POlayVOAdgGnlKgq9Z9VbcaLW0';
   const supabaseClient = createClient(supabaseUrl, supabaseKey);
 
   const form = document.getElementById("produkForm");
@@ -76,8 +76,7 @@
         harga,
         deskripsi,
         kontak,
-        gambar_url,
-        aktif: true  // ⬅️ otomatis aktif
+        gambar_url
       }]);
 
     if (error) {
