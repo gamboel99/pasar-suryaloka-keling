@@ -3,52 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <title>Produk - Pasar Suryaloka Keling</title>
-  <script type="module">
-    import { createClient } from "https://esm.sh/@supabase/supabase-js";
-
-    const supabaseUrl = 'https://fyiedhszxdkhuqopxoaw.supabase.co';
-    const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ5aWVkaHN6eGRraHVxb3B4b2F3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTIyODQ3MTksImV4cCI6MjA2Nzg2MDcxOX0.87Ri-pQtNDVk5t9e7POlayVOAdgGnlKgq9Z9VbcaLW0';
-    const supabase = createClient(supabaseUrl, supabaseKey);
-
-    const produkList = document.getElementById("produkList");
-
-    async function loadProduk() {
-      const { data, error } = await supabase
-        .from("Produk")
-        .select("*")
-        .order("created_at", { ascending: false });
-
-      if (error) {
-        produkList.innerHTML = `<p>❌ Gagal memuat produk: ${error.message}</p>`;
-        return;
-      }
-
-      if (!data || data.length === 0) {
-        produkList.innerHTML = `<p>Belum ada produk yang ditampilkan.</p>`;
-        return;
-      }
-
-      produkList.innerHTML = "";
-
-      data.forEach((item) => {
-        const card = document.createElement("div");
-        card.className = "produk-item";
-
-        card.innerHTML = `
-          <img src="${item.gambar_url}" alt="${item.nama_produk}" />
-          <h3>${item.nama_produk}</h3>
-          <p class="harga">Rp ${item.harga.toLocaleString("id-ID")}</p>
-          <p>${item.deskripsi || ""}</p>
-          <p>📞 <a href="https://wa.me/${item.kontak}" target="_blank">${item.kontak}</a></p>
-        `;
-
-        produkList.appendChild(card);
-      });
-    }
-
-    loadProduk();
-  </script>
-
+  <script src="https://unpkg.com/@supabase/supabase-js"></script>
   <style>
     body {
       font-family: sans-serif;
@@ -101,12 +56,76 @@
       font-weight: bold;
       color: #d32f2f;
     }
+
+    .back-btn {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+    .back-btn a {
+      text-decoration: none;
+      color: white;
+      background: #4caf50;
+      padding: 10px 20px;
+      border-radius: 5px;
+    }
   </style>
 </head>
 <body>
 
-<h1>Produk di Pasar Suryaloka Keling</h1>
-<div class="produk-grid" id="produkList">⏳ Memuat produk...</div>
+  <h1>Produk di Pasar Suryaloka Keling</h1>
+
+  <div class="back-btn">
+    <a href="index.html">🏠 Kembali ke Beranda</a>
+  </div>
+
+  <div class="produk-grid" id="produkList">⏳ Memuat produk...</div>
+
+  <script>
+    const { createClient } = supabase;
+    const supabaseUrl = 'https://fyiedhszxdkhuqopxoaw.supabase.co';
+    const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ5aWVkaHN6eGRraHVxb3B4b2F3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTIyODQ3MTksImV4cCI6MjA2Nzg2MDcxOX0.87Ri-pQtNDVk5t9e7POlayVOAdgGnlKgq9Z9VbcaLW0';
+    const supabase = createClient(supabaseUrl, supabaseKey);
+
+    const produkList = document.getElementById("produkList");
+
+    async function loadProduk() {
+      const { data, error } = await supabase
+        .from("Produk")
+        .select("*")
+        .eq("aktif", true)
+        .order("created_at", { ascending: false });
+
+      if (error) {
+        produkList.innerHTML = `<p>❌ Gagal memuat produk: ${error.message}</p>`;
+        return;
+      }
+
+      if (data.length === 0) {
+        produkList.innerHTML = `<p>Belum ada produk yang ditampilkan.</p>`;
+        return;
+      }
+
+      produkList.innerHTML = "";
+
+      data.forEach((item) => {
+        const card = document.createElement("div");
+        card.className = "produk-item";
+
+        card.innerHTML = `
+          <img src="${item.gambar_url}" alt="${item.nama_produk}" />
+          <h3>${item.nama_produk}</h3>
+          <p class="harga">Rp ${item.harga.toLocaleString()}</p>
+          <p>${item.deskripsi || ""}</p>
+          <p>📞 <a href="https://wa.me/${item.kontak}" target="_blank">${item.kontak}</a></p>
+        `;
+
+        produkList.appendChild(card);
+      });
+    }
+
+    loadProduk();
+  </script>
 
 </body>
 </html>
