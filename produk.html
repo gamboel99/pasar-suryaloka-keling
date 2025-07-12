@@ -17,7 +17,7 @@
       color: #2e7d32;
     }
 
-    .Produk-grid {
+    .produk-grid {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
       gap: 20px;
@@ -25,7 +25,7 @@
       margin: auto;
     }
 
-    .Produk-item {
+    .produk-item {
       background-color: #ffffff;
       border: 1px solid #c8e6c9;
       border-radius: 10px;
@@ -34,19 +34,19 @@
       text-align: center;
     }
 
-    .Produk-item img {
+    .produk-item img {
       max-width: 100%;
       height: 200px;
       object-fit: cover;
       border-radius: 6px;
     }
 
-    .Produk-item h3 {
+    .produk-item h3 {
       margin: 10px 0 5px;
       color: #007e33;
     }
 
-    .Produk-item p {
+    .produk-item p {
       margin: 5px 0;
       color: #333;
       font-size: 14px;
@@ -67,23 +67,23 @@
   const { createClient } = supabase;
   const supabaseUrl = 'https://fyiedhszxdkhuqopxoaw.supabase.co';
   const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ5aWVkaHN6eGRraHVxb3B4b2F3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTIyODQ3MTksImV4cCI6MjA2Nzg2MDcxOX0.87Ri-pQtNDVk5t9e7POlayVOAdgGnlKgq9Z9VbcaLW0';
-  const supabaseClient = createClient(supabaseUrl, supabaseKey);
+  const supabase = createClient(supabaseUrl, supabaseKey);
 
   const produkList = document.getElementById("produkList");
 
   async function loadProduk() {
-    const { data, error } = await supabaseClient
-      .from("Produk")
+    const { data, error } = await supabase
+      .from("produk")  // ✅ Sudah sesuai nama tabel
       .select("*")
       .order("created_at", { ascending: false });
 
     if (error) {
-      produkList.innerHTML = `<p>❌ Gagal memuat Produk: ${error.message}</p>`;
+      produkList.innerHTML = `<p>❌ Gagal memuat produk: ${error.message}</p>`;
       return;
     }
 
     if (data.length === 0) {
-      produkList.innerHTML = `<p>Belum ada Produk yang ditampilkan.</p>`;
+      produkList.innerHTML = `<p>Belum ada produk yang ditampilkan.</p>`;
       return;
     }
 
@@ -91,12 +91,12 @@
 
     data.forEach((item) => {
       const card = document.createElement("div");
-      card.className = "Produk-item";
+      card.className = "produk-item";
 
       card.innerHTML = `
         <img src="${item.gambar_url}" alt="${item.nama_produk}" />
         <h3>${item.nama_produk}</h3>
-        <p class="harga">Rp ${item.harga.toLocaleString()}</p>
+        <p class="harga">Rp ${item.harga?.toLocaleString() || 'N/A'}</p>
         <p>${item.deskripsi || ""}</p>
         <p>📞 <a href="https://wa.me/${item.kontak}" target="_blank">${item.kontak}</a></p>
       `;
