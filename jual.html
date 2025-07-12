@@ -27,17 +27,16 @@
 </form>
 
 <script>
-  const { createClient } = supabase;
   const supabaseUrl = 'https://fyiedhszxdkhuqopxoaw.supabase.co';
   const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ5aWVkaHN6eGRraHVxb3B4b2F3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTIyODQ3MTksImV4cCI6MjA2Nzg2MDcxOX0.87Ri-pQtNDVk5t9e7POlayVOAdgGnlKgq9Z9VbcaLW0';
-  const supabase = createClient(supabaseUrl, supabaseKey);
+  const supabase = supabase.createClient(supabaseUrl, supabaseKey);
 
   const form = document.getElementById("produkForm");
   const status = document.getElementById("status");
 
   form.addEventListener("submit", async (e) => {
     e.preventDefault();
-    status.innerText = "⏳ Mengirim...";
+    status.innerText = "⏳ Mengunggah...";
 
     const nama = document.getElementById("nama").value;
     const harga = parseInt(document.getElementById("harga").value);
@@ -46,32 +45,40 @@
     const file = document.getElementById("gambar").files[0];
 
     if (!file) {
-      status.innerText = "❌ Gambar wajib diunggah.";
+      status.innerText = "❌ Harap pilih gambar.";
       return;
     }
 
-    const fileName = `${Date.now()}-${file.name}`;
-    const { data: imgData, error: imgErr } = await supabase.storage
-      .from('produk-images')
-      .upload(fileName, file);
+    // Upload gambar ke Supabase Storage
+    const fileExt = file.name.split('.').pop();
+    const fileName = `${Date.now()}.${fileExt}`;
+    const filePath = `${fileName}`;
 
-    if (imgErr) {
-      status.innerText = "❌ Gagal upload gambar: " + imgErr.message;
+    const { error: uploadError } = await supabase
+      .storage
+      .from('produk-images')
+      .upload(filePath, file);
+
+    if (uploadError) {
+      status.innerText = "❌ Gagal mengunggah gambar: " + uploadError.message;
       return;
     }
 
-    const { data: publicUrlData } = supabase.storage
+    // Ambil URL publik gambar
+    const { data: publicData } = supabase
+      .storage
       .from('produk-images')
-      .getPublicUrl(fileName);
+      .getPublicUrl(filePath);
 
-    const gambar_url = publicUrlData.publicUrl;
+    const gambar_url = publicData.publicUrl;
 
-    const { error } = await supabase
-      .from('Produk')  // Pastikan huruf P besar sesuai nama tabel
+    // Simpan ke tabel Produk
+    const { error: insertError } = await supabase
+      .from('Produk') // P besar, sesuai nama tabel
       .insert([{ nama_produk: nama, harga, deskripsi, kontak, gambar_url }]);
 
-    if (error) {
-      status.innerText = "❌ Gagal menyimpan data produk: " + error.message;
+    if (insertError) {
+      status.innerText = "❌ Gagal menyimpan data: " + insertError.message;
     } else {
       status.innerText = "✅ Produk berhasil dikirim!";
       form.reset();
