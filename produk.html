@@ -3,7 +3,6 @@
 <head>
   <meta charset="UTF-8" />
   <title>Produk - Pasar Suryaloka Keling</title>
-  <script src="https://unpkg.com/@supabase/supabase-js"></script>
   <style>
     body {
       font-family: sans-serif;
@@ -96,64 +95,68 @@
   <input type="text" id="searchInput" placeholder="🔍 Cari produk... (cth: sabun, beras, kerajinan)" />
   <div class="produk-grid" id="produkList">⏳ Memuat produk...</div>
 
+  <!-- Script dimuat di akhir agar supabase dikenali lebih dulu -->
+  <script src="https://unpkg.com/@supabase/supabase-js"></script>
   <script>
-    const supabaseUrl = 'https://fyiedhszxdkhuqopxoaw.supabase.co';
-    const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ5aWVkaHN6eGRraHVxb3B4b2F3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTIyODQ3MTksImV4cCI6MjA2Nzg2MDcxOX0.87Ri-pQtNDVk5t9e7POlayVOAdgGnlKgq9Z9VbcaLW0';
-    const supabase = supabase.createClient(supabaseUrl, supabaseKey);
+    document.addEventListener("DOMContentLoaded", async () => {
+      const supabaseUrl = 'https://fyiedhszxdkhuqopxoaw.supabase.co';
+      const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ5aWVkaHN6eGRraHVxb3B4b2F3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTIyODQ3MTksImV4cCI6MjA2Nzg2MDcxOX0.87Ri-pQtNDVk5t9e7POlayVOAdgGnlKgq9Z9VbcaLW0';
+      const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
 
-    const produkList = document.getElementById("produkList");
-    const searchInput = document.getElementById("searchInput");
-    let allProduk = [];
+      const produkList = document.getElementById("produkList");
+      const searchInput = document.getElementById("searchInput");
+      let allProduk = [];
 
-    async function loadProduk() {
-      const { data, error } = await supabase
-        .from("Produk")
-        .select("*")
-        .order("created_at", { ascending: false });
+      async function loadProduk() {
+        const { data, error } = await supabase
+          .from("Produk")
+          .select("*")
+          .order("created_at", { ascending: false });
 
-      if (error) {
-        produkList.innerHTML = `<p>❌ Gagal memuat Produk: ${error.message}</p>`;
-        return;
+        if (error) {
+          produkList.innerHTML = `<p>❌ Gagal memuat Produk: ${error.message}</p>`;
+          return;
+        }
+
+        allProduk = data;
+        displayProduk(data);
       }
 
-      allProduk = data;
-      displayProduk(data);
-    }
+      function displayProduk(data) {
+        produkList.innerHTML = "";
 
-    function displayProduk(data) {
-      produkList.innerHTML = "";
+        if (data.length === 0) {
+          produkList.innerHTML = "<p>Tidak ada produk ditemukan.</p>";
+          return;
+        }
 
-      if (data.length === 0) {
-        produkList.innerHTML = "<p>Tidak ada produk ditemukan.</p>";
-        return;
+        data.forEach((item) => {
+          const card = document.createElement("div");
+          card.className = "produk-item";
+
+          card.innerHTML = `
+            <img src="${item.gambar_url}" alt="${item.nama_produk}" />
+            <h3>${item.nama_produk}</h3>
+            <p class="harga">Rp ${item.harga.toLocaleString()}</p>
+            <p>${item.deskripsi || ""}</p>
+            <p>📞 <a href="https://wa.me/${item.kontak}" target="_blank">${item.kontak}</a></p>
+          `;
+
+          produkList.appendChild(card);
+        });
       }
 
-      data.forEach((item) => {
-        const card = document.createElement("div");
-        card.className = "produk-item";
-
-        card.innerHTML = `
-          <img src="${item.gambar_url}" alt="${item.nama_produk}" />
-          <h3>${item.nama_produk}</h3>
-          <p class="harga">Rp ${item.harga.toLocaleString()}</p>
-          <p>${item.deskripsi || ""}</p>
-          <p>📞 <a href="https://wa.me/${item.kontak}" target="_blank">${item.kontak}</a></p>
-        `;
-
-        produkList.appendChild(card);
+      searchInput.addEventListener("input", () => {
+        const keyword = searchInput.value.toLowerCase();
+        const filtered = allProduk.filter(item =>
+          item.nama_produk.toLowerCase().includes(keyword) ||
+          (item.deskripsi || "").toLowerCase().includes(keyword)
+        );
+        displayProduk(filtered);
       });
-    }
 
-    searchInput.addEventListener("input", () => {
-      const keyword = searchInput.value.toLowerCase();
-      const filtered = allProduk.filter(item =>
-        item.nama_produk.toLowerCase().includes(keyword) ||
-        (item.deskripsi || "").toLowerCase().includes(keyword)
-      );
-      displayProduk(filtered);
+      loadProduk();
     });
-
-    loadProduk();
   </script>
 
 </body>
