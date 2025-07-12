@@ -3,7 +3,6 @@
 <head>
   <meta charset="UTF-8" />
   <title>Jual Produk - Pasar Suryaloka Keling</title>
-  <script src="https://unpkg.com/@supabase/supabase-js"></script>
   <style>
     body { font-family: sans-serif; background: #f1fff1; padding: 20px; }
     form { max-width: 400px; margin: auto; background: white; padding: 20px; border-radius: 10px; }
@@ -52,11 +51,12 @@
   <a href="index.html">← Kembali ke Beranda</a>
 </div>
 
+<!-- Supabase JS di bagian paling BAWAH sebelum script lainnya -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
-  const { createClient } = supabase;
   const supabaseUrl = 'https://fyiedhszxdkhuqopxoaw.supabase.co';
   const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ5aWVkaHN6eGRraHVxb3B4b2F3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTIyODQ3MTksImV4cCI6MjA2Nzg2MDcxOX0.87Ri-pQtNDVk5t9e7POlayVOAdgGnlKgq9Z9VbcaLW0';
-  const supabase = createClient(supabaseUrl, supabaseKey);
+  const supabase = supabase.createClient(supabaseUrl, supabaseKey);
 
   const form = document.getElementById("produkForm");
   const status = document.getElementById("status");
@@ -68,8 +68,8 @@
     const nama = document.getElementById("nama").value;
     const harga = parseInt(document.getElementById("harga").value);
     const deskripsi = document.getElementById("deskripsi").value;
-    const kontakInput = document.getElementById("kontak").value.trim();
-    const kontak = '62' + kontakInput.replace(/^0/, '').replace(/\D/g, '');
+    const kontakRaw = document.getElementById("kontak").value.trim().replace(/^0/, '');
+    const kontak = "62" + kontakRaw;
     const file = document.getElementById("gambar").files[0];
 
     if (!file) {
@@ -78,8 +78,7 @@
     }
 
     const fileName = `${Date.now()}-${file.name}`;
-    const { data: imgData, error: imgError } = await supabase
-      .storage
+    const { data: imgData, error: imgError } = await supabase.storage
       .from('produk-images')
       .upload(fileName, file);
 
@@ -88,13 +87,15 @@
       return;
     }
 
-    const { data: publicUrlData } = supabase.storage
+    const { data: publicUrlData } = supabase
+      .storage
       .from('produk-images')
       .getPublicUrl(fileName);
+
     const gambar_url = publicUrlData.publicUrl;
 
     const { error: dbError } = await supabase
-      .from('Produk') // P besar sesuai nama tabel
+      .from('Produk') // Pastikan huruf 'P' besar sesuai tabel
       .insert([{ nama_produk: nama, harga, deskripsi, kontak, gambar_url }]);
 
     if (dbError) {
