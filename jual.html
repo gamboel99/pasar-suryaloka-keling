@@ -2,34 +2,37 @@
 <html lang="id">
 <head>
   <meta charset="UTF-8" />
-  <title>Jual Produk</title>
+  <title>Jual Produk - Pasar Suryaloka Keling</title>
   <style>
     body { font-family: sans-serif; padding: 20px; background: #f1fff1; }
     form { max-width: 400px; margin: auto; background: white; padding: 20px; border-radius: 10px; }
     input, textarea { width: 100%; margin-bottom: 10px; padding: 8px; }
     button { padding: 10px 20px; background: #00c853; color: white; border: none; cursor: pointer; }
     #status { margin-top: 10px; text-align: center; font-weight: bold; }
+    a.kembali { display: block; text-align: center; margin-top: 20px; color: #007e33; text-decoration: none; }
   </style>
   <script src="https://unpkg.com/@supabase/supabase-js"></script>
 </head>
 <body>
 
-<h2>Form Jual Produk</h2>
+<h2>🛒 Form Jual Produk</h2>
 
 <form id="produkForm">
   <input type="text" id="nama" placeholder="Nama Produk" required />
   <input type="number" id="harga" placeholder="Harga (Rp)" required />
   <textarea id="deskripsi" placeholder="Deskripsi Produk"></textarea>
-  <input type="text" id="kontak" placeholder="Nomor WA (tanpa +62, hanya 8xxx)" required />
+  <input type="text" id="kontak" placeholder="Nomor HP/WA (cth: 0822xxxx)" required />
   <input type="file" id="gambar" accept="image/*" required />
   <button type="submit">Kirim Produk</button>
   <p id="status"></p>
 </form>
 
+<a href="index.html" class="kembali">⬅️ Kembali ke Beranda</a>
+
 <script>
   const { createClient } = supabase;
   const supabaseUrl = 'https://fyiedhszxdkhuqopxoaw.supabase.co';
-  const supabaseKey = 'YOUR_PUBLIC_ANON_KEY'; // Ganti dengan API KEY kamu
+  const supabaseKey = 'ISI_API_KEY_ANON_KAMU_DI_SINI';
   const supabaseClient = createClient(supabaseUrl, supabaseKey);
 
   const form = document.getElementById("produkForm");
@@ -42,42 +45,30 @@
     const nama = document.getElementById("nama").value;
     const harga = parseInt(document.getElementById("harga").value);
     const deskripsi = document.getElementById("deskripsi").value;
-    let kontak = document.getElementById("kontak").value;
-
-    // Otomatis tambah +62 jika belum
-    if (!kontak.startsWith("+62")) {
-      kontak = "+62" + kontak.replace(/^0/, ""); // Ganti awalan 0 jadi +62
-    }
-
+    const kontak = document.getElementById("kontak").value;
     const file = document.getElementById("gambar").files[0];
-    const fileName = `${Date.now()}-${file.name}`;
 
-    // Upload ke storage
-    const { data: uploadData, error: uploadError } = await supabaseClient
-      .storage
-      .from("produk-images")
+    const fileName = `${Date.now()}-${file.name}`;
+    const { data: imgData, error: imgErr } = await supabaseClient
+      .storage.from('produk-images')
       .upload(fileName, file);
 
-    if (uploadError) {
-      status.innerText = "❌ Gagal upload gambar: " + uploadError.message;
-      console.error(uploadError);
+    if (imgErr) {
+      status.innerText = "❌ Gagal upload gambar: " + imgErr.message;
       return;
     }
 
     const { data: publicUrlData } = supabaseClient
-      .storage
-      .from("produk-images")
+      .storage.from('produk-images')
       .getPublicUrl(fileName);
     const gambar_url = publicUrlData.publicUrl;
 
-    // Insert ke tabel Produk
-    const { error: insertError } = await supabaseClient
-      .from("Produk")
+    const { error } = await supabaseClient
+      .from('Produk')
       .insert([{ nama_produk: nama, harga, deskripsi, kontak, gambar_url }]);
 
-    if (insertError) {
-      status.innerText = "❌ Gagal menyimpan data: " + insertError.message;
-      console.error(insertError);
+    if (error) {
+      status.innerText = "❌ Gagal menyimpan data: " + error.message;
     } else {
       status.innerText = "✅ Produk berhasil dikirim!";
       form.reset();
